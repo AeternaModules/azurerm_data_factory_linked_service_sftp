@@ -16,8 +16,14 @@ Optional:
     - integration_runtime_name
     - parameters
     - password
+    - password_key_vault_id (alternative to password - read from Key Vault instead)
+    - password_key_vault_secret_name (alternative to password - read from Key Vault instead)
     - private_key_content_base64
+    - private_key_content_base64_key_vault_id (alternative to private_key_content_base64 - read from Key Vault instead)
+    - private_key_content_base64_key_vault_secret_name (alternative to private_key_content_base64 - read from Key Vault instead)
     - private_key_passphrase
+    - private_key_passphrase_key_vault_id (alternative to private_key_passphrase - read from Key Vault instead)
+    - private_key_passphrase_key_vault_secret_name (alternative to private_key_passphrase - read from Key Vault instead)
     - private_key_path
     - skip_host_key_validation
     - key_vault_password (block):
@@ -32,23 +38,29 @@ Optional:
 EOT
 
   type = map(object({
-    authentication_type        = string
-    data_factory_id            = string
-    host                       = string
-    name                       = string
-    port                       = number
-    username                   = string
-    private_key_passphrase     = optional(string)
-    private_key_content_base64 = optional(string)
-    password                   = optional(string)
-    parameters                 = optional(map(string))
-    description                = optional(string)
-    host_key_fingerprint       = optional(string)
-    private_key_path           = optional(string)
-    annotations                = optional(list(string))
-    additional_properties      = optional(map(string))
-    integration_runtime_name   = optional(string)
-    skip_host_key_validation   = optional(bool)
+    authentication_type                              = string
+    data_factory_id                                  = string
+    host                                             = string
+    name                                             = string
+    port                                             = number
+    username                                         = string
+    private_key_passphrase                           = optional(string)
+    private_key_passphrase_key_vault_id              = optional(string)
+    private_key_passphrase_key_vault_secret_name     = optional(string)
+    private_key_content_base64                       = optional(string)
+    private_key_content_base64_key_vault_id          = optional(string)
+    private_key_content_base64_key_vault_secret_name = optional(string)
+    password                                         = optional(string)
+    password_key_vault_id                            = optional(string)
+    password_key_vault_secret_name                   = optional(string)
+    parameters                                       = optional(map(string))
+    description                                      = optional(string)
+    host_key_fingerprint                             = optional(string)
+    private_key_path                                 = optional(string)
+    annotations                                      = optional(list(string))
+    additional_properties                            = optional(map(string))
+    integration_runtime_name                         = optional(string)
+    skip_host_key_validation                         = optional(bool)
     key_vault_password = optional(list(object({
       linked_service_name = string
       secret_name         = string

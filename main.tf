@@ -1,3 +1,18 @@
+data "azurerm_key_vault_secret" "password" {
+  for_each     = { for k, v in var.data_factory_linked_service_sftps : k => v if v.password_key_vault_id != null && v.password_key_vault_secret_name != null }
+  name         = each.value.password_key_vault_secret_name
+  key_vault_id = each.value.password_key_vault_id
+}
+data "azurerm_key_vault_secret" "private_key_content_base64" {
+  for_each     = { for k, v in var.data_factory_linked_service_sftps : k => v if v.private_key_content_base64_key_vault_id != null && v.private_key_content_base64_key_vault_secret_name != null }
+  name         = each.value.private_key_content_base64_key_vault_secret_name
+  key_vault_id = each.value.private_key_content_base64_key_vault_id
+}
+data "azurerm_key_vault_secret" "private_key_passphrase" {
+  for_each     = { for k, v in var.data_factory_linked_service_sftps : k => v if v.private_key_passphrase_key_vault_id != null && v.private_key_passphrase_key_vault_secret_name != null }
+  name         = each.value.private_key_passphrase_key_vault_secret_name
+  key_vault_id = each.value.private_key_passphrase_key_vault_id
+}
 resource "azurerm_data_factory_linked_service_sftp" "data_factory_linked_service_sftps" {
   for_each = var.data_factory_linked_service_sftps
 
@@ -7,9 +22,9 @@ resource "azurerm_data_factory_linked_service_sftp" "data_factory_linked_service
   name                       = each.value.name
   port                       = each.value.port
   username                   = each.value.username
-  private_key_passphrase     = each.value.private_key_passphrase
-  private_key_content_base64 = each.value.private_key_content_base64
-  password                   = each.value.password
+  private_key_passphrase     = each.value.private_key_passphrase != null ? each.value.private_key_passphrase : try(data.azurerm_key_vault_secret.private_key_passphrase[each.key].value, null)
+  private_key_content_base64 = each.value.private_key_content_base64 != null ? each.value.private_key_content_base64 : try(data.azurerm_key_vault_secret.private_key_content_base64[each.key].value, null)
+  password                   = each.value.password != null ? each.value.password : try(data.azurerm_key_vault_secret.password[each.key].value, null)
   parameters                 = each.value.parameters
   description                = each.value.description
   host_key_fingerprint       = each.value.host_key_fingerprint
