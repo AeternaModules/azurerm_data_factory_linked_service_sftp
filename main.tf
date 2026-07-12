@@ -20,7 +20,7 @@ resource "azurerm_data_factory_linked_service_sftp" "data_factory_linked_service
   skip_host_key_validation   = each.value.skip_host_key_validation
 
   dynamic "key_vault_password" {
-    for_each = each.value.key_vault_password != null ? [each.value.key_vault_password] : []
+    for_each = each.value.key_vault_password != null ? each.value.key_vault_password : []
     content {
       linked_service_name = key_vault_password.value.linked_service_name
       secret_name         = key_vault_password.value.secret_name
