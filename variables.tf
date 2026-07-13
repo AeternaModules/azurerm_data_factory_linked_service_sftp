@@ -74,55 +74,110 @@ EOT
       secret_name         = string
     }))
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_data_factory_linked_service_sftp's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: name
-  #   source:    [from validate.LinkedServiceDatasetName] regexp.MustCompile(`^[-.+?/<>*%&:\\]+$`).MatchString(value)
-  # path: data_factory_id
-  #   source:    [from factories.ValidateFactoryID] !ok
-  # path: data_factory_id
-  #   source:    [from factories.ValidateFactoryID] err != nil
-  # path: authentication_type
-  #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
-  # path: host
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: username
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: description
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: host_key_fingerprint
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: integration_runtime_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: key_vault_private_key_passphrase.linked_service_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: key_vault_private_key_passphrase.secret_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: password
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: key_vault_password.linked_service_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: key_vault_password.secret_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: private_key_content_base64
-  #   source:    validation.StringIsBase64(...) - no translation rule yet, add one
-  # path: key_vault_private_key_content_base64.linked_service_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
-  # path: key_vault_private_key_content_base64.secret_name
-  #   condition: length(value) > 0
-  #   message:   must not be empty
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        length(v.host) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        length(v.username) > 0
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.description == null || (length(v.description) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.host_key_fingerprint == null || (length(v.host_key_fingerprint) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.integration_runtime_name == null || (length(v.integration_runtime_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_private_key_passphrase == null || (length(v.key_vault_private_key_passphrase.linked_service_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_private_key_passphrase == null || (length(v.key_vault_private_key_passphrase.secret_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.password == null || (length(v.password) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_password == null || alltrue([for item in v.key_vault_password : (length(item.linked_service_name) > 0)])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_password == null || alltrue([for item in v.key_vault_password : (length(item.secret_name) > 0)])
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.private_key_content_base64 == null || (can(base64decode(v.private_key_content_base64)))
+      )
+    ])
+    error_message = "must be valid base64"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_private_key_content_base64 == null || (length(v.key_vault_private_key_content_base64.linked_service_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_linked_service_sftps : (
+        v.key_vault_private_key_content_base64 == null || (length(v.key_vault_private_key_content_base64.secret_name) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # Note: 4 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
