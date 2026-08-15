@@ -40,11 +40,11 @@ output "data_factory_linked_service_sftps_key_vault_password" {
 }
 output "data_factory_linked_service_sftps_key_vault_private_key_content_base64" {
   description = "Map of key_vault_private_key_content_base64 values across all data_factory_linked_service_sftps, keyed the same as var.data_factory_linked_service_sftps"
-  value       = { for k, v in azurerm_data_factory_linked_service_sftp.data_factory_linked_service_sftps : k => v.key_vault_private_key_content_base64 if v.key_vault_private_key_content_base64 != null && length(v.key_vault_private_key_content_base64) > 0 }
+  value       = { for k, v in azurerm_data_factory_linked_service_sftp.data_factory_linked_service_sftps : k => one(v.key_vault_private_key_content_base64) if v.key_vault_private_key_content_base64 != null && length(v.key_vault_private_key_content_base64) > 0 }
 }
 output "data_factory_linked_service_sftps_key_vault_private_key_passphrase" {
   description = "Map of key_vault_private_key_passphrase values across all data_factory_linked_service_sftps, keyed the same as var.data_factory_linked_service_sftps"
-  value       = { for k, v in azurerm_data_factory_linked_service_sftp.data_factory_linked_service_sftps : k => v.key_vault_private_key_passphrase if v.key_vault_private_key_passphrase != null && length(v.key_vault_private_key_passphrase) > 0 }
+  value       = { for k, v in azurerm_data_factory_linked_service_sftp.data_factory_linked_service_sftps : k => one(v.key_vault_private_key_passphrase) if v.key_vault_private_key_passphrase != null && length(v.key_vault_private_key_passphrase) > 0 }
 }
 output "data_factory_linked_service_sftps_name" {
   description = "Map of name values across all data_factory_linked_service_sftps, keyed the same as var.data_factory_linked_service_sftps"
